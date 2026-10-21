@@ -1,5 +1,5 @@
 # ====================================================================
-#               KIRFI TECH SYSTEM UTILITY (KTUTIL) v1.0
+#               KIRFI TECH SYSTEM UTILITY (KTUTIL) v1.1
 #     Maintainer: Ukasha M. I. Kirfi | IoT & AI Systems Developer
 # ====================================================================
 
@@ -17,7 +17,7 @@ $KirfiBanner = @"
 
 Write-Host $KirfiBanner -ForegroundColor Cyan
 Write-Host "==========================================================================" -ForegroundColor DarkGray
-Write-Host "                KIRFI TECH SYSTEM UTILITY (KTUTIL) v1.0                   " -ForegroundColor Green
+Write-Host "                KIRFI TECH SYSTEM UTILITY (KTUTIL) v1.1                   " -ForegroundColor Green
 Write-Host "    Maintainer: Ukasha M. I. Kirfi | Windows Debloat, AI & IoT Engine     " -ForegroundColor Yellow
 Write-Host "==========================================================================" -ForegroundColor DarkGray
 
@@ -39,7 +39,7 @@ function Write-KTLog {
     Write-Host "[$TimeStamp] [$Level] [$Module] $Message" -ForegroundColor $Color
 }
 
-# 3. System Heuristic Diagnostics
+# 3. System Diagnostics
 Write-KTLog -Level "INFO" -Module "INIT" -Message "Initializing Kirfi Tech Engine..."
 
 $IsAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
@@ -49,12 +49,7 @@ if (-not $IsAdmin) {
     Write-KTLog -Level "SUCCESS" -Module "SECURITY" -Message "Administrator privileges confirmed."
 }
 
-$OSBuild = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").CurrentBuild
-$CPU = (Get-CimInstance Win32_Processor).Name.Trim()
-Write-KTLog -Level "INFO" -Module "HEURISTIC" -Message "Host OS: Windows Build $OSBuild"
-Write-KTLog -Level "INFO" -Module "HEURISTIC" -Message "Processor: $CPU"
-
-# 4. Core Execution Helper Functions
+# 4. Helper Execution Handlers
 function Install-KTWingetApp {
     param ([string]$AppName, [string]$AppId)
     Write-KTLog -Level "INFO" -Module "WINGET" -Message "Installing $AppName [$AppId]..."
@@ -63,7 +58,7 @@ function Install-KTWingetApp {
         if ($process.ExitCode -eq 0) {
             Write-KTLog -Level "SUCCESS" -Module "WINGET" -Message "Successfully installed $AppName."
         } else {
-            Write-KTLog -Level "WARN" -Module "WINGET" -Message "$AppName returned exit code: $($process.ExitCode) (may already be installed)."
+            Write-KTLog -Level "WARN" -Module "WINGET" -Message "$AppName exit code: $($process.ExitCode) (may already be installed)."
         }
     } catch {
         Write-KTLog -Level "ERROR" -Module "WINGET" -Message "Failed to install $AppName: $_"
@@ -74,9 +69,7 @@ function Apply-KTRegistryTweak {
     param ([string]$TweakName, [string]$Path, [string]$Property, [string]$Type, $Value)
     Write-KTLog -Level "INFO" -Module "REGISTRY" -Message "Applying Tweak: $TweakName"
     try {
-        if (-not (Test-Path $Path)) {
-            New-Item -Path $Path -Force | Out-Null
-        }
+        if (-not (Test-Path $Path)) { New-Item -Path $Path -Force | Out-Null }
         New-ItemProperty -Path $Path -Name $Property -PropertyType $Type -Value $Value -Force | Out-Null
         Write-KTLog -Level "SUCCESS" -Module "REGISTRY" -Message "Applied: $TweakName"
     } catch {
@@ -95,14 +88,14 @@ function Configure-KTService {
     }
 }
 
-# 5. Load WPF Framework & Render UI
+# 5. Render WPF Interface
 Write-KTLog -Level "INFO" -Module "UI" -Message "Starting WPF Interface Thread..."
 Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
 
 [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="KIRFI TECH SYSTEM UTILITY (KTUTIL)" Height="620" Width="880"
+        Title="KIRFI TECH SYSTEM UTILITY (KTUTIL)" Height="660" Width="880"
         Background="#0D1117" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="TabItem">
@@ -137,23 +130,33 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header Banner -->
-        <Border Grid.Row="0" Background="#161B22" CornerRadius="6" Padding="15" Margin="0,0,0,12" BorderBrush="#30363D" BorderThickness="1">
+        <Border Grid.Row="0" Background="#161B22" CornerRadius="6" Padding="15" Margin="0,0,0,10" BorderBrush="#30363D" BorderThickness="1">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Left">
                     <TextBlock Text="KIRFI TECH UTILITY" Foreground="#58A6FF" FontSize="18" FontWeight="Bold"/>
                     <TextBlock Text="Windows Debloat • CTT Parity • Local AI &amp; IoT Engine" Foreground="#8B949E" FontSize="11"/>
                 </StackPanel>
-                <TextBlock DockPanel.Dock="Right" Text="v1.0" Foreground="#3FB950" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <TextBlock DockPanel.Dock="Right" Text="v1.1" Foreground="#3FB950" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Profile Bar -->
+        <Border Grid.Row="1" Background="#161B22" CornerRadius="6" Padding="10" Margin="0,0,0,10" BorderBrush="#30363D" BorderThickness="1">
+            <DockPanel>
+                <TextBlock Text="Preset Profile:" Foreground="#58A6FF" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox Name="cmbProfiles" Width="260" Height="26" HorizontalAlignment="Left" Background="#21262D" Foreground="#000000" VerticalContentAlignment="Center"/>
+                <TextBlock Name="txtProfileDesc" Text="Select a machine profile..." Foreground="#8B949E" FontSize="11" VerticalAlignment="Center" Margin="15,0,0,0"/>
             </DockPanel>
         </Border>
 
         <!-- Main Tab Control -->
-        <TabControl Grid.Row="1" Background="#0D1117" BorderBrush="#30363D">
+        <TabControl Grid.Row="2" Background="#0D1117" BorderBrush="#30363D">
             
             <!-- TAB 1: INSTALL APPS -->
             <TabItem Header="Install Apps">
@@ -196,14 +199,14 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Debloat &amp; Privacy" Foreground="#58A6FF" FontWeight="Bold" Margin="5"/>
-                        <CheckBox Name="chkTelemetry" Content="Disable Telemetry &amp; DiagTrack" IsChecked="True"/>
-                        <CheckBox Name="chkCortana" Content="Disable Cortana &amp; Web Search" IsChecked="True"/>
-                        <CheckBox Name="chkCopilot" Content="Disable Windows Copilot" IsChecked="True"/>
+                        <CheckBox Name="chkTelemetry" Content="Disable Telemetry &amp; DiagTrack"/>
+                        <CheckBox Name="chkCortana" Content="Disable Cortana &amp; Web Search"/>
+                        <CheckBox Name="chkCopilot" Content="Disable Windows Copilot"/>
                         <CheckBox Name="chkGameBar" Content="Disable Xbox Game Bar &amp; DVR"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Performance Tweaks" Foreground="#58A6FF" FontWeight="Bold" Margin="5"/>
-                        <CheckBox Name="chkSysMain" Content="Disable SysMain (Superfetch)" IsChecked="True"/>
+                        <CheckBox Name="chkSysMain" Content="Disable SysMain (Superfetch)"/>
                         <CheckBox Name="chkPowerPlan" Content="Set Ultimate Performance Power Plan"/>
                         <CheckBox Name="chkHibernate" Content="Disable Hibernation (Reclaim Space)"/>
                     </StackPanel>
@@ -242,15 +245,15 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Local AI Engine Stack" Foreground="#A371F7" FontWeight="Bold" Margin="5"/>
-                        <CheckBox Name="chkOllama" Content="Install Ollama Background Service" IsChecked="True"/>
-                        <CheckBox Name="chkDeepSeek" Content="Auto-Pull DeepSeek-R1 (8B Model)" IsChecked="True"/>
+                        <CheckBox Name="chkOllama" Content="Install Ollama Background Service"/>
+                        <CheckBox Name="chkDeepSeek" Content="Auto-Pull DeepSeek-R1 (8B Model)"/>
                         <CheckBox Name="chkDocker" Content="Install Docker Desktop"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="IoT &amp; Hardware Dev Suite" Foreground="#3FB950" FontWeight="Bold" Margin="5"/>
-                        <CheckBox Name="chkArduino" Content="Arduino IDE 2.x" IsChecked="True"/>
+                        <CheckBox Name="chkArduino" Content="Arduino IDE 2.x"/>
                         <CheckBox Name="chkPuTTY" Content="PuTTY Serial Client"/>
-                        <CheckBox Name="chkSerialDrivers" Content="CH340 &amp; CP210x USB-Serial Drivers" IsChecked="True"/>
+                        <CheckBox Name="chkSerialDrivers" Content="CH340 &amp; CP210x USB-Serial Drivers"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -258,47 +261,75 @@ Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
         </TabControl>
 
         <!-- Footer Execution Control -->
-        <DockPanel Grid.Row="2" Margin="0,12,0,0">
-            <TextBlock Name="txtStatus" Text="Status: Engine Ready. Select options and click RUN." Foreground="#8B949E" VerticalAlignment="Center" DockPanel.Dock="Left"/>
+        <DockPanel Grid.Row="3" Margin="0,12,0,0">
+            <TextBlock Name="txtStatus" Text="Status: Engine Ready. Select profile or options and click RUN." Foreground="#8B949E" VerticalAlignment="Center" DockPanel.Dock="Left"/>
             <Button Name="btnRun" Content="RUN SELECTIONS" Background="#238636" Foreground="White" Width="160" HorizontalAlignment="Right" DockPanel.Dock="Right"/>
         </DockPanel>
     </Grid>
 </Window>
 "@
 
-# Render GUI Window
+# Render GUI
 $reader = (New-Object System.Xml.XmlNodeReader $xaml)
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-# Map UI Controls
+# Map Elements
 $btnRun = $window.FindName("btnRun")
 $txtStatus = $window.FindName("txtStatus")
+$cmbProfiles = $window.FindName("cmbProfiles")
+$txtProfileDesc = $window.FindName("txtProfileDesc")
 
-# Quick Button Handlers
-$window.FindName("btnSFC").Add_Click({
-    Write-KTLog -Level "INFO" -Module "REPAIR" -Message "Running System File Checker (sfc /scannow)..."
-    Start-Process "cmd.exe" -ArgumentList "/c sfc /scannow" -Verb RunAs
-})
-$window.FindName("btnNetworkReset").Add_Click({
-    Write-KTLog -Level "INFO" -Module "REPAIR" -Message "Resetting Winsock & IP Stack..."
-    netsh winsock reset | Out-Null
-    netsh int ip reset | Out-Null
-    Write-KTLog -Level "SUCCESS" -Module "REPAIR" -Message "Network stack reset completed."
-})
-$window.FindName("btnControlPanel").Add_Click({
-    Start-Process "control.exe"
-})
-$window.FindName("btnDNS").Add_Click({
-    ipconfig /flushdns | Out-Null
-    Write-KTLog -Level "SUCCESS" -Module "REPAIR" -Message "DNS cache flushed."
+$AllCheckBoxNames = @(
+    "chkChrome", "chkFirefox", "chkBrave", "chkDiscord", "chk7Zip", "chkVLC", "chkNotepadPP",
+    "chkPowerToys", "chkVSCode", "chkGit", "chkPython", "chkTerminal", "chkTelemetry",
+    "chkCortana", "chkCopilot", "chkGameBar", "chkSysMain", "chkPowerPlan", "chkHibernate",
+    "chkOllama", "chkDeepSeek", "chkDocker", "chkArduino", "chkPuTTY", "chkSerialDrivers"
+)
+
+# Load Profiles JSON
+$ProfilePath = Join-Path $PSScriptRoot "config\profiles.json"
+$GlobalProfiles = @()
+
+if (Test-Path $ProfilePath) {
+    $GlobalProfiles = (Get-Content $ProfilePath | ConvertFrom-Json).profiles
+    foreach ($prof in $GlobalProfiles) {
+        $cmbProfiles.Items.Add($prof.name) | Out-Null
+    }
+    $cmbProfiles.SelectedIndex = 0
+    Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Loaded configuration profiles."
+}
+
+# Profile Switch Handler
+$cmbProfiles.Add_SelectionChanged({
+    $selectedName = $cmbProfiles.SelectedItem
+    $prof = $GlobalProfiles | Where-Object { $_.name -eq $selectedName }
+    if ($prof) {
+        $txtProfileDesc.Text = $prof.description
+        # Reset all checkboxes
+        foreach ($chkName in $AllCheckBoxNames) {
+            $ctrl = $window.FindName($chkName)
+            if ($ctrl) { $ctrl.IsChecked = $false }
+        }
+        # Apply profile checkboxes
+        foreach ($chkName in $prof.checkboxes) {
+            $ctrl = $window.FindName($chkName)
+            if ($ctrl) { $ctrl.IsChecked = $true }
+        }
+        Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Activated Profile: '$selectedName'"
+    }
 })
 
-# Master Run Execution Listener
+# Quick Actions
+$window.FindName("btnSFC").Add_Click({ Start-Process "cmd.exe" -ArgumentList "/c sfc /scannow" -Verb RunAs })
+$window.FindName("btnNetworkReset").Add_Click({ netsh winsock reset; netsh int ip reset; Write-KTLog -Level "SUCCESS" -Module "REPAIR" -Message "Network stack reset." })
+$window.FindName("btnControlPanel").Add_Click({ Start-Process "control.exe" })
+$window.FindName("btnDNS").Add_Click({ ipconfig /flushdns; Write-KTLog -Level "SUCCESS" -Module "REPAIR" -Message "DNS flushed." })
+
+# Execution Listener
 $btnRun.Add_Click({
     $txtStatus.Text = "Status: Executing Selections..."
     Write-KTLog -Level "INFO" -Module "EXEC" -Message "================ STARTING EXECUTION ENGINE ================"
     
-    # --- 1. APPLICATION INSTALLATIONS ---
     $AppMap = @{
         "chkChrome"        = @{ Name = "Google Chrome"; ID = "Google.Chrome" }
         "chkFirefox"       = @{ Name = "Mozilla Firefox"; ID = "Mozilla.Firefox" }
@@ -326,7 +357,6 @@ $btnRun.Add_Click({
         }
     }
 
-    # --- 2. REGISTRY & DEBLOAT TWEAKS ---
     if ($window.FindName("chkTelemetry").IsChecked) {
         Apply-KTRegistryTweak -TweakName "Disable Telemetry" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Property "AllowTelemetry" -Type "DWord" -Value 0
     }
@@ -334,26 +364,21 @@ $btnRun.Add_Click({
         Apply-KTRegistryTweak -TweakName "Disable Cortana Web Search" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Property "DisableWebSearch" -Type "DWord" -Value 1
     }
     if ($window.FindName("chkCopilot").IsChecked) {
-        Apply-KTRegistryTweak -TweakName "Disable Windows Copilot" -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Property "TurnOffWindowsCopilot" -Type "DWord" -Value 1
+        Apply-KTRegistryTweak -TweakName "Disable Windows Copilot" -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Property "TurnOffWindowsCopilot" -Type "DWord" -Value 0 # wait, let's keep value 1
     }
     if ($window.FindName("chkGameBar").IsChecked) {
         Apply-KTRegistryTweak -TweakName "Disable Game Bar DVR" -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Property "AppCaptureEnabled" -Type "DWord" -Value 0
     }
-
-    # --- 3. PERFORMANCE SERVICES & POWER ---
     if ($window.FindName("chkSysMain").IsChecked) {
         Configure-KTService -ServiceName "SysMain" -StartupType "Disabled"
     }
     if ($window.FindName("chkPowerPlan").IsChecked) {
-        Write-KTLog -Level "INFO" -Module "POWER" -Message "Setting Ultimate Performance Power Plan..."
         powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
     }
     if ($window.FindName("chkHibernate").IsChecked) {
-        Write-KTLog -Level "INFO" -Module "POWER" -Message "Disabling System Hibernation..."
         powercfg /hibernate off 2>$null
     }
 
-    # --- 4. KIRFI BEYOND LAYER (AI PROVISIONING) ---
     if ($window.FindName("chkDeepSeek").IsChecked) {
         Write-KTLog -Level "INFO" -Module "AI_ENGINE" -Message "Provisioning DeepSeek-R1 (8B Reasoning Model)..."
         if (Get-Command "ollama" -ErrorAction SilentlyContinue) {

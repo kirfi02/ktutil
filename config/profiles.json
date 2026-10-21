@@ -1,0 +1,48 @@
+{
+  "profiles": [
+    {
+      "name": "Custom / Manual",
+      "description": "User-selected custom checkbox configuration.",
+      "checkboxes": []
+    },
+    {
+      "name": "Minimal Privacy & Debloat",
+      "description": "Disables telemetry, Cortana, Copilot, and SysMain for maximum privacy and performance.",
+      "checkboxes": [
+        "chkTelemetry",
+        "chkCortana",
+        "chkCopilot",
+        "chkSysMain"
+      ]
+    },
+    {
+      "name": "AI Workstation Host",
+      "description": "Debloats Windows and provisions the local AI runtime stack (Ollama, DeepSeek-R1, Docker, VS Code, Git, Python).",
+      "checkboxes": [
+        "chkTelemetry",
+        "chkCortana",
+        "chkCopilot",
+        "chkVSCode",
+        "chkGit",
+        "chkPython",
+        "chkTerminal",
+        "chkOllama",
+        "chkDeepSeek",
+        "chkDocker"
+      ]
+    },
+    {
+      "name": "IoT & Embedded Hardware Suite",
+      "description": "Pre-loads hardware toolchains (Arduino IDE, PuTTY, CH340/CP210x Drivers) and core dev tools.",
+      "checkboxes": [
+        "chkTelemetry",
+        "chkVSCode",
+        "chkGit",
+        "chkTerminal",
+        "chkArduino",
+        "chkPuTTY",
+        "chkSerialDrivers"
+      ]
+    }
+  ]
+}
