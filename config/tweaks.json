@@ -1,0 +1,53 @@
+{
+  "registry_tweaks": [
+    {
+      "name": "Disable Telemetry & DiagTrack",
+      "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+      "property": "AllowTelemetry",
+      "type": "DWord",
+      "value": 0,
+      "default": 1
+    },
+    {
+      "name": "Disable Cortana & Web Search in Start",
+      "path": "HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+      "property": "DisableWebSearch",
+      "type": "DWord",
+      "value": 1,
+      "default": 0
+    },
+    {
+      "name": "Disable Windows Copilot",
+      "path": "HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+      "property": "TurnOffWindowsCopilot",
+      "type": "DWord",
+      "value": 1,
+      "default": 0
+    },
+    {
+      "name": "Disable Xbox Game Bar & DVR",
+      "path": "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+      "property": "AppCaptureEnabled",
+      "type": "DWord",
+      "value": 0,
+      "default": 1
+    }
+  ],
+  "service_tweaks": [
+    {
+      "name": "SysMain (Superfetch)",
+      "service_name": "SysMain",
+      "startup_type": "Disabled"
+    },
+    {
+      "name": "Connected User Experiences and Telemetry",
+      "service_name": "DiagTrack",
+      "startup_type": "Disabled"
+    },
+    {
+      "name": "WAP Push Message Routing Service",
+      "service_name": "dmwappushservice",
+      "startup_type": "Manual"
+    }
+  ]
+}

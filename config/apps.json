@@ -1,0 +1,33 @@
+{
+  "categories": {
+    "browsers_comms": [
+      { "name": "Google Chrome", "id": "Google.Chrome", "source": "winget" },
+      { "name": "Mozilla Firefox", "id": "Mozilla.Firefox", "source": "winget" },
+      { "name": "Brave Browser", "id": "Brave.Brave", "source": "winget" },
+      { "name": "Discord", "id": "Discord.Discord", "source": "winget" }
+    ],
+    "utilities": [
+      { "name": "7-Zip", "id": "7zip.7zip", "source": "winget" },
+      { "name": "VLC Media Player", "id": "VideoLAN.VLC", "source": "winget" },
+      { "name": "Notepad++", "id": "Notepad++.Notepad++", "source": "winget" },
+      { "name": "Microsoft PowerToys", "id": "Microsoft.PowerToys", "source": "winget" }
+    ],
+    "general_dev": [
+      { "name": "VS Code", "id": "Microsoft.VisualStudioCode", "source": "winget" },
+      { "name": "Git for Windows", "id": "Git.Git", "source": "winget" },
+      { "name": "Python 3.11", "id": "Python.Python.3.11", "source": "winget" },
+      { "name": "Windows Terminal", "id": "Microsoft.WindowsTerminal", "source": "winget" }
+    ],
+    "local_ai_stack": [
+      { "name": "Ollama AI Runtime", "id": "Ollama.Ollama", "source": "winget" },
+      { "name": "Docker Desktop", "id": "Docker.DockerDesktop", "source": "winget" }
+    ],
+    "iot_hardware_toolkit": [
+      { "name": "Arduino IDE 2.x", "id": "Arduino.IDE.2", "source": "winget" },
+      { "name": "Wireshark Network Analyzer", "id": "WiresharkFoundation.Wireshark", "source": "winget" },
+      { "name": "PuTTY Serial Client", "id": "PuTTY.PuTTY", "source": "winget" },
+      { "name": "CH340 Serial Driver", "id": "WCH.CH340", "source": "winget" },
+      { "name": "CP210x USB-to-UART Driver", "id": "SiliconLabs.CP210xVCPDriver", "source": "winget" }
+    ]
+  }
+}
