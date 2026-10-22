@@ -62,7 +62,7 @@ function Install-KTWingetApp {
         }
     } catch {
         $err = $_.Exception.Message
-        Write-KTLog -Level "ERROR" -Module "WINGET" -Message "Failed to install $AppName: $err"
+        Write-KTLog -Level "ERROR" -Module "WINGET" -Message "Failed to install $AppName."
     }
 }
 
@@ -75,7 +75,7 @@ function Apply-KTRegistryTweak {
         Write-KTLog -Level "SUCCESS" -Module "REGISTRY" -Message "Applied: $TweakName"
     } catch {
         $err = $_.Exception.Message
-        Write-KTLog -Level "ERROR" -Module "REGISTRY" -Message "Failed $TweakName: $err"
+        Write-KTLog -Level "ERROR" -Module "REGISTRY" -Message "Failed $TweakName."
     }
 }
 
@@ -87,7 +87,7 @@ function Configure-KTService {
         Write-KTLog -Level "SUCCESS" -Module "SERVICE" -Message "Service '$ServiceName' configured."
     } catch {
         $err = $_.Exception.Message
-        Write-KTLog -Level "WARN" -Module "SERVICE" -Message "Unable to configure service '$ServiceName': $err"
+        Write-KTLog -Level "WARN" -Module "SERVICE" -Message "Unable to configure service '$ServiceName'."
     }
 }
 
@@ -302,10 +302,9 @@ if (Test-Path $ProfilePath) {
         $cmbProfiles.SelectedIndex = 0
         Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Loaded configuration profiles."
     } catch {
-        Write-KTLog -Level "WARN" -Module "PROFILES" -Message "Could not parse profiles.json: $_"
+        Write-KTLog -Level "WARN" -Module "PROFILES" -Message "Could not parse profiles.json"
     }
 } else {
-    # Fallback default profile if config files are not local
     $cmbProfiles.Items.Add("Custom / Manual") | Out-Null
     $cmbProfiles.SelectedIndex = 0
 }
@@ -324,7 +323,7 @@ $cmbProfiles.Add_SelectionChanged({
             $ctrl = $window.FindName($chkName)
             if ($ctrl) { $ctrl.IsChecked = $true }
         }
-        Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Activated Profile: '$selectedName'"
+        Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Activated Profile"
     }
 })
 
@@ -382,7 +381,7 @@ $btnRun.Add_Click({
         Configure-KTService -ServiceName "SysMain" -StartupType "Disabled"
     }
     if ($window.FindName("chkPowerPlan").IsChecked) {
-        powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2>$null
+        powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c 2://$null
     }
     if ($window.FindName("chkHibernate").IsChecked) {
         powercfg /hibernate off 2>$null
