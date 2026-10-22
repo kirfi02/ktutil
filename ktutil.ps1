@@ -61,7 +61,8 @@ function Install-KTWingetApp {
             Write-KTLog -Level "WARN" -Module "WINGET" -Message "$AppName exit code: $($process.ExitCode) (may already be installed)."
         }
     } catch {
-        Write-KTLog -Level "ERROR" -Module "WINGET" -Message "Failed to install $AppName: $_"
+        $err = $_.Exception.Message
+        Write-KTLog -Level "ERROR" -Module "WINGET" -Message "Failed to install $AppName: $err"
     }
 }
 
@@ -73,7 +74,8 @@ function Apply-KTRegistryTweak {
         New-ItemProperty -Path $Path -Name $Property -PropertyType $Type -Value $Value -Force | Out-Null
         Write-KTLog -Level "SUCCESS" -Module "REGISTRY" -Message "Applied: $TweakName"
     } catch {
-        Write-KTLog -Level "ERROR" -Module "REGISTRY" -Message "Failed $TweakName: $_"
+        $err = $_.Exception.Message
+        Write-KTLog -Level "ERROR" -Module "REGISTRY" -Message "Failed $TweakName: $err"
     }
 }
 
@@ -84,7 +86,8 @@ function Configure-KTService {
         Set-Service -Name $ServiceName -StartupType $StartupType -ErrorAction Stop
         Write-KTLog -Level "SUCCESS" -Module "SERVICE" -Message "Service '$ServiceName' configured."
     } catch {
-        Write-KTLog -Level "WARN" -Module "SERVICE" -Message "Unable to configure service '$ServiceName': $_"
+        $err = $_.Exception.Message
+        Write-KTLog -Level "WARN" -Module "SERVICE" -Message "Unable to configure service '$ServiceName': $err"
     }
 }
 
@@ -291,12 +294,20 @@ $ProfilePath = Join-Path $PSScriptRoot "config\profiles.json"
 $GlobalProfiles = @()
 
 if (Test-Path $ProfilePath) {
-    $GlobalProfiles = (Get-Content $ProfilePath | ConvertFrom-Json).profiles
-    foreach ($prof in $GlobalProfiles) {
-        $cmbProfiles.Items.Add($prof.name) | Out-Null
+    try {
+        $GlobalProfiles = (Get-Content $ProfilePath | ConvertFrom-Json).profiles
+        foreach ($prof in $GlobalProfiles) {
+            $cmbProfiles.Items.Add($prof.name) | Out-Null
+        }
+        $cmbProfiles.SelectedIndex = 0
+        Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Loaded configuration profiles."
+    } catch {
+        Write-KTLog -Level "WARN" -Module "PROFILES" -Message "Could not parse profiles.json: $_"
     }
+} else {
+    # Fallback default profile if config files are not local
+    $cmbProfiles.Items.Add("Custom / Manual") | Out-Null
     $cmbProfiles.SelectedIndex = 0
-    Write-KTLog -Level "INFO" -Module "PROFILES" -Message "Loaded configuration profiles."
 }
 
 # Profile Switch Handler
@@ -305,12 +316,10 @@ $cmbProfiles.Add_SelectionChanged({
     $prof = $GlobalProfiles | Where-Object { $_.name -eq $selectedName }
     if ($prof) {
         $txtProfileDesc.Text = $prof.description
-        # Reset all checkboxes
         foreach ($chkName in $AllCheckBoxNames) {
             $ctrl = $window.FindName($chkName)
             if ($ctrl) { $ctrl.IsChecked = $false }
         }
-        # Apply profile checkboxes
         foreach ($chkName in $prof.checkboxes) {
             $ctrl = $window.FindName($chkName)
             if ($ctrl) { $ctrl.IsChecked = $true }
@@ -364,7 +373,7 @@ $btnRun.Add_Click({
         Apply-KTRegistryTweak -TweakName "Disable Cortana Web Search" -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search" -Property "DisableWebSearch" -Type "DWord" -Value 1
     }
     if ($window.FindName("chkCopilot").IsChecked) {
-        Apply-KTRegistryTweak -TweakName "Disable Windows Copilot" -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Property "TurnOffWindowsCopilot" -Type "DWord" -Value 0 # wait, let's keep value 1
+        Apply-KTRegistryTweak -TweakName "Disable Windows Copilot" -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Property "TurnOffWindowsCopilot" -Type "DWord" -Value 1
     }
     if ($window.FindName("chkGameBar").IsChecked) {
         Apply-KTRegistryTweak -TweakName "Disable Game Bar DVR" -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR" -Property "AppCaptureEnabled" -Type "DWord" -Value 0
